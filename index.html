@@ -21,30 +21,32 @@
     }
     #circle {
       position: absolute;
-      width: 300px;
-      height: 300px;
+      width: 600px;
+      height: 600px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 48px;
       font-weight: bold;
-      color: #000;
+      color: #fff;
       z-index: 2;
-      animation: flyIn 1s ease-out forwards;
-      animation-delay: 2s;
+      top: calc(50% - 300px);
+      left: calc(50% - 300px);
+      transform: perspective(500px) rotateX(10deg) rotateY(10deg);
+      text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff, 0 0 40px #ff0000;
+      animation: glow 2s ease-in-out infinite;
     }
-    @keyframes flyIn {
-      from {
-        top: -400px;
-        left: calc(50% - 150px);
-        opacity: 0;
+    @keyframes glow {
+      0% {
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff, 0 0 40px #ff0000;
       }
-      to {
-        top: calc(50% - 150px);
-        left: calc(50% - 150px);
-        opacity: 1;
+      50% {
+        text-shadow: 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #00ffff, 0 0 50px #ff0000;
+      }
+      100% {
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff, 0 0 40px #ff0000;
       }
     }
   </style>
@@ -61,6 +63,7 @@
       cw = canvas.width = window.innerWidth;
       ch = canvas.height = window.innerHeight;
     });
+
     class Heart {
       constructor(x, y) {
         this.x = x;
@@ -88,6 +91,7 @@
         ctx.restore();
       }
     }
+
     function drawHeart(ctx, x, y, size) {
       ctx.beginPath();
       const topCurveHeight = size * 0.3;
@@ -115,26 +119,27 @@
       ctx.closePath();
       ctx.fill();
     }
+
     let hearts = [];
-    function initHearts() {
-      hearts = [];
-      const numberOfHearts = 100;
-      const startX = cw / 2;
-      const startY = ch / 2;
-      for (let i = 0; i < numberOfHearts; i++) {
-        hearts.push(new Heart(startX, startY));
-      }
-    }
+
     function animate() {
       ctx.clearRect(0, 0, cw, ch);
-      hearts.forEach((heart, index) => {
-        heart.update();
-        heart.draw(ctx);
-        if (heart.alpha <= 0) hearts.splice(index, 1);
-      });
-      if (hearts.length > 0) requestAnimationFrame(animate);
+
+      // Legg til nye hjerter fra midten (Big Bang-effekt)
+      for (let i = 0; i < 2; i++) {
+        hearts.push(new Heart(cw / 2, ch / 2));
+      }
+
+      // Oppdater og tegn hjerter
+      for (let i = hearts.length - 1; i >= 0; i--) {
+        hearts[i].update();
+        hearts[i].draw(ctx);
+        if (hearts[i].alpha <= 0) hearts.splice(i, 1);
+      }
+
+      requestAnimationFrame(animate);
     }
-    initHearts();
+
     animate();
   </script>
 </body>
